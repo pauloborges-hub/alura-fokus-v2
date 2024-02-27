@@ -4,8 +4,14 @@ const btnAdicionarTarefa = document.querySelector('.app__button--add-task');
 const formAdicionarTarefa = document.querySelector('.app__form-add-task');
 const textArea = document.querySelector('.app__form-textarea');
 const ulTarefas = document.querySelector('.app__section-task-list');
+const btnCancelar = document.querySelector('.app__form-footer__button--cancel');
 
 const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+
+function limpaFormulario() {
+    textArea.value = '';
+    formAdicionarTarefa.classList.add('hidden');
+}
 
 function atualizarTarefas() {
     localStorage.setItem('tarefas', JSON.stringify(tarefas));
@@ -32,10 +38,13 @@ function criarElementoTarefa(tarefa) {
     botao.classList.add('app_button-edit');
 
     botao.onclick = () => {
+        // debugger -> debug do prompt de atualizar tarefa
         const novaDescricao = prompt('Qual o novo nome da tarefa?');
-        paragrafo.textContent = novaDescricao;
-        tarefa.descricao = novaDescricao;
-        atualizarTarefas();
+        if(novaDescricao) {
+            paragrafo.textContent = novaDescricao;
+            tarefa.descricao = novaDescricao;
+            atualizarTarefas();
+        }
     }
 
     const imagemBotao = document.createElement('img');
@@ -49,6 +58,11 @@ function criarElementoTarefa(tarefa) {
 
     return li;
 }
+
+// cancela a adição de uma tarefa nova e esconde o formulário
+btnCancelar.addEventListener('click', () => {
+    limpaFormulario();
+})
 
 btnAdicionarTarefa.addEventListener('click', () => {
     formAdicionarTarefa.classList.toggle('hidden');             // coloca um toggle no botão de adicionar nova tarefa (mostra/esconde formulário)
