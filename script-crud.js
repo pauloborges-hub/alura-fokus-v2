@@ -3,11 +3,12 @@
 const btnAdicionarTarefa = document.querySelector('.app__button--add-task');
 const formAdicionarTarefa = document.querySelector('.app__form-add-task');
 const textArea = document.querySelector('.app__form-textarea');
+const ulTarefas = document.querySelector('.app__section-task-list');
 
-const tarefas = [];
+const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
 
 // recebe uma tarefa como parâmetro e devolve código HTML para a página
-function adicionarElementoTarefa(tarefa) {
+function criarElementoTarefa(tarefa) {
     const li = document.createElement('li');                    // cria um list item HTML
     li.classList.add('app__section-task-list-item');            // adiciona 'app__section-task-list-item' a lista de classes de li
 
@@ -21,10 +22,17 @@ function adicionarElementoTarefa(tarefa) {
 
     const paragrafo = document.createElement('p');              // cria um parágrafo HTML
     paragrafo.textContent = tarefa.descricao;
+    paragrafo.classList.add('app__section-task-list-item-description');
 
     const botao = document.createElement('button');
-    const imagemBotao = document.createElement('img');
+    botao.classList.add('app_button-edit');
 
+    botao.onclick = () => {
+        const novaDescricao = prompt('Qual o novo nome da tarefa?');
+        paragrafo.textContent = novaDescricao;
+    }
+
+    const imagemBotao = document.createElement('img');
     imagemBotao.setAttribute('src', '/imagens/edit.png');       // define um atributo HTML 
     botao.append(imagemBotao);                                  // aninha a tag <img> dentro da tag <botao>
 
@@ -32,11 +40,13 @@ function adicionarElementoTarefa(tarefa) {
     li.append(svg);
     li.append(paragrafo);
     li.append(botao);
+
+    return li;
 }
 
 btnAdicionarTarefa.addEventListener('click', () => {
     formAdicionarTarefa.classList.toggle('hidden');             // coloca um toggle no botão de adicionar nova tarefa (mostra/esconde formulário)
-})
+});
 
 formAdicionarTarefa.addEventListener('submit', (evento) => {
     evento.preventDefault();                                    // impede o comportamento padrão do evento (recarregar a página)
@@ -44,5 +54,14 @@ formAdicionarTarefa.addEventListener('submit', (evento) => {
         descricao: textArea.value
     }
     tarefas.push(tarefa);
+    const elementoTarefa = criarElementoTarefa(tarefa);
+    ulTarefas.append(elementoTarefa);
     localStorage.setItem('tarefas', JSON.stringify(tarefas));   // transforma o objeto em string e guarda no localStorage
-})
+    textArea.value = '';
+    formAdicionarTarefa.classList.add('hidden');
+});
+
+tarefas.forEach((tarefa) => {
+    const elementoTarefa = criarElementoTarefa(tarefa);
+    ulTarefas.append(elementoTarefa);
+});
