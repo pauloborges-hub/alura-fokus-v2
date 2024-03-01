@@ -18,7 +18,7 @@ const somBeep = new Audio('/sons/beep.mp3');
 const somPause = new Audio('/sons/pause.mp3');
 const somStart = new Audio('/sons/play.wav');
 
-let tempoDecorridoEmSegundos = 1500;
+let tempoDecorridoEmSegundos = 10;
 let intervaloId = null;
 
 musica.loop = true;
@@ -84,10 +84,12 @@ const contagemRegressiva = () => {
         somBeep.play();
         alert('Tempo finalizado!');
         const focoAtivo = html.getAttribute('data-contexto') == 'foco';
+
         if(focoAtivo) {
-            const evento = new CustomEvent('FocoFinalizado'); //evento é objeto da classe CustomEvent()
-            document.dispatchEvent(evento);
+            const evento = new CustomEvent('FocoFinalizado');   // evento é objeto da classe CustomEvent()
+            document.dispatchEvent(evento);                     // lança o evento para as outras partes do código da aplicação
         }
+
         zerar();
         return;
     } 

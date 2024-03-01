@@ -10,6 +10,7 @@ const paragrafoDescricaoTarefa = document.querySelector('.app__section-active-ta
 
 const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
 let tarefaSelecionada = null;
+let liTarefaSelecionada = null;
 
 function limpaFormulario() {
     textArea.value = '';
@@ -69,10 +70,12 @@ function criarElementoTarefa(tarefa) {
         if(tarefaSelecionada == tarefa) {
             paragrafoDescricaoTarefa.textContent = '';
             tarefaSelecionada = null;
+            liTarefaSelecionada = null;
             return; // early return
         }
         
         tarefaSelecionada = tarefa;
+        liTarefaSelecionada = li;
         paragrafoDescricaoTarefa.textContent = tarefa.descricao;    // Coloca o conteúdo de texto da tarefa clicada dentro do campo #em andamento
         li.classList.add('app__section-task-list-item-active');     // Usa a classe CSS que pinta a borda do botão quando a tarefa está ativa
     }
@@ -105,4 +108,12 @@ formAdicionarTarefa.addEventListener('submit', (evento) => {
 tarefas.forEach((tarefa) => {
     const elementoTarefa = criarElementoTarefa(tarefa);
     ulTarefas.append(elementoTarefa);
+});
+
+document.addEventListener('FocoFinalizado', () => {
+    if(tarefaSelecionada && liTarefaSelecionada) {
+        liTarefaSelecionada.classList.remove('app__section-task-list-item-active');
+        liTarefaSelecionada.classList.add('app__section-task-list-item-complete');
+        liTarefaSelecionada.querySelector('button').setAttribute('disabled', 'disabled');
+    }
 });
