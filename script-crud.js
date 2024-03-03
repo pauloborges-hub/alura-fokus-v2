@@ -1,13 +1,12 @@
-// encontrar o botão adicionar tarefa
-
 const btnAdicionarTarefa = document.querySelector('.app__button--add-task');
 const formAdicionarTarefa = document.querySelector('.app__form-add-task');
 const textArea = document.querySelector('.app__form-textarea');
 const ulTarefas = document.querySelector('.app__section-task-list');
 const btnCancelar = document.querySelector('.app__form-footer__button--cancel');
-const paragrafoDescricaoTarefa = document.querySelector('.app__section-active-task-description'); // pega classe que joga o elemento da lista de tarefas no campo #em andamento
+const paragrafoDescricaoTarefa = document.querySelector('.app__section-active-task-description'); 
 
-const btnRemoverConcluidas = document.querySelector('#btn-remover-concluidas'); //referência para o botão "remover tarefas concluídas"
+const btnRemoverConcluidas = document.querySelector('#btn-remover-concluidas'); 
+const btnRemoverTodas = document.querySelector('#btn-remover-todas'); 
 
 let tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
 let tarefaSelecionada = null;
@@ -22,12 +21,12 @@ function atualizarTarefas() {
     localStorage.setItem('tarefas', JSON.stringify(tarefas));
 }
 
-// recebe uma tarefa como parâmetro e devolve código HTML para a página
-function criarElementoTarefa(tarefa) {
-    const li = document.createElement('li');                    // cria um list item HTML
-    li.classList.add('app__section-task-list-item');            // adiciona 'app__section-task-list-item' a lista de classes de li
 
-    const svg = document.createElement('svg');                  // cria um scalable vector graphics HTML
+function criarElementoTarefa(tarefa) {
+    const li = document.createElement('li');                    
+    li.classList.add('app__section-task-list-item');            
+
+    const svg = document.createElement('svg');                  
     svg.innerHTML = `                                           
     <svg class="app__section-task-icon-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <circle cx="12" cy="12" r="12" fill="#FFF"></circle>
@@ -35,7 +34,7 @@ function criarElementoTarefa(tarefa) {
     </svg>
     `
 
-    const paragrafo = document.createElement('p');              // cria um parágrafo HTML
+    const paragrafo = document.createElement('p');              
     paragrafo.textContent = tarefa.descricao;
     paragrafo.classList.add('app__section-task-list-item-description');
 
@@ -43,7 +42,6 @@ function criarElementoTarefa(tarefa) {
     botao.classList.add('app_button-edit');
 
     botao.onclick = () => {
-        // debugger -> debug do prompt de atualizar tarefa
         const novaDescricao = prompt('Qual o novo nome da tarefa?');
         if(novaDescricao) {
             paragrafo.textContent = novaDescricao;
@@ -53,10 +51,9 @@ function criarElementoTarefa(tarefa) {
     }
 
     const imagemBotao = document.createElement('img');
-    imagemBotao.setAttribute('src', '/imagens/edit.png');       // define um atributo HTML 
-    botao.append(imagemBotao);                                  // aninha a tag <img> dentro da tag <botao>
+    imagemBotao.setAttribute('src', '/imagens/edit.png');       
+    botao.append(imagemBotao);                                  
 
-    // aninha os elementos abaixo dentro da tag <li>
     li.append(svg);
     li.append(paragrafo);
     li.append(botao);
@@ -65,7 +62,6 @@ function criarElementoTarefa(tarefa) {
         li.classList.add('app__section-task-list-item-complete');
         botao.setAttribute('disabled', 'disabled');
     } else {
-        // evento onclick, sempre que um elemento da lista de tarefas é clicado entra no evento
         li.onclick = () => {
             document.querySelectorAll('.app__section-task-list-item-active')
                 .forEach((elemento) => {
@@ -76,36 +72,35 @@ function criarElementoTarefa(tarefa) {
                 paragrafoDescricaoTarefa.textContent = '';
                 tarefaSelecionada = null;
                 liTarefaSelecionada = null;
-                return; // early return
+                return; 
             }
             
             tarefaSelecionada = tarefa;
             liTarefaSelecionada = li;
-            paragrafoDescricaoTarefa.textContent = tarefa.descricao;    // Coloca o conteúdo de texto da tarefa clicada dentro do campo #em andamento
-            li.classList.add('app__section-task-list-item-active');     // Usa a classe CSS que pinta a borda do botão quando a tarefa está ativa
+            paragrafoDescricaoTarefa.textContent = tarefa.descricao;    
+            li.classList.add('app__section-task-list-item-active');     
         }
     }
     return li;
 }
 
-// cancela a adição de uma tarefa nova e esconde o formulário
 btnCancelar.addEventListener('click', () => {
     limpaFormulario();
 })
 
 btnAdicionarTarefa.addEventListener('click', () => {
-    formAdicionarTarefa.classList.toggle('hidden');             // coloca um toggle no botão de adicionar nova tarefa (mostra/esconde formulário)
+    formAdicionarTarefa.classList.toggle('hidden');             
 });
 
 formAdicionarTarefa.addEventListener('submit', (evento) => {
-    evento.preventDefault();                                    // impede o comportamento padrão do evento (recarregar a página)
+    evento.preventDefault();                                   
     const tarefa = {
         descricao: textArea.value
     }
     tarefas.push(tarefa);
     const elementoTarefa = criarElementoTarefa(tarefa);
     ulTarefas.append(elementoTarefa);
-    atualizarTarefas();                                         // transforma o objeto em string e guarda no localStorage
+    atualizarTarefas();                                         
     textArea.value = '';
     formAdicionarTarefa.classList.add('hidden');
 });
@@ -125,13 +120,14 @@ document.addEventListener('FocoFinalizado', () => {
     }
 });
 
-// quando ocorrer evento de clique no botão "remover tarefas concluídas", entra na função
-btnRemoverConcluidas.onclick = () => {
-    const seletor = ".app__section-task-list-item-complete"; // seletor CSS de tarefas concluídas
-    // remove cada elemento por completo da NodeList de tarefas concluídas
+const removerTarefas = (somenteCompletas) => {
+    const seletor = somenteCompletas ? ".app__section-task-list-item-complete" : ".app__section-task-list-item"; 
     document.querySelectorAll(seletor).forEach(elemento => {
         elemento.remove();
     });
-    tarefas = tarefas.filter(tarefa => !tarefa.completa); // joga para dentro da variável "tarefas" apenas as tarefas que ainda não foram concluídas
+    tarefas = somenteCompletas ? tarefas.filter(tarefa => !tarefa.completa) : []; 
     atualizarTarefas(); 
 }
+
+btnRemoverConcluidas.onclick = () => removerTarefas(true);
+btnRemoverTodas.onclick = () => removerTarefas(false);

@@ -86,8 +86,8 @@ const contagemRegressiva = () => {
         const focoAtivo = html.getAttribute('data-contexto') == 'foco';
 
         if(focoAtivo) {
-            const evento = new CustomEvent('FocoFinalizado');   // evento é objeto da classe CustomEvent()
-            document.dispatchEvent(evento);                     // lança o evento para as outras partes do código da aplicação
+            const evento = new CustomEvent('FocoFinalizado');   
+            document.dispatchEvent(evento);                     
         }
 
         zerar();
