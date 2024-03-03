@@ -5,10 +5,11 @@ const formAdicionarTarefa = document.querySelector('.app__form-add-task');
 const textArea = document.querySelector('.app__form-textarea');
 const ulTarefas = document.querySelector('.app__section-task-list');
 const btnCancelar = document.querySelector('.app__form-footer__button--cancel');
-
 const paragrafoDescricaoTarefa = document.querySelector('.app__section-active-task-description'); // pega classe que joga o elemento da lista de tarefas no campo #em andamento
 
-const tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
+const btnRemoverConcluidas = document.querySelector('#btn-remover-concluidas'); //referência para o botão "remover tarefas concluídas"
+
+let tarefas = JSON.parse(localStorage.getItem('tarefas')) || [];
 let tarefaSelecionada = null;
 let liTarefaSelecionada = null;
 
@@ -64,6 +65,7 @@ function criarElementoTarefa(tarefa) {
         li.classList.add('app__section-task-list-item-complete');
         botao.setAttribute('disabled', 'disabled');
     } else {
+        // evento onclick, sempre que um elemento da lista de tarefas é clicado entra no evento
         li.onclick = () => {
             document.querySelectorAll('.app__section-task-list-item-active')
                 .forEach((elemento) => {
@@ -83,9 +85,6 @@ function criarElementoTarefa(tarefa) {
             li.classList.add('app__section-task-list-item-active');     // Usa a classe CSS que pinta a borda do botão quando a tarefa está ativa
         }
     }
-
-    // evento onclick, sempre que um elemento da lista de tarefas é clicado entra no evento
-
     return li;
 }
 
@@ -125,3 +124,14 @@ document.addEventListener('FocoFinalizado', () => {
         atualizarTarefas();
     }
 });
+
+// quando ocorrer evento de clique no botão "remover tarefas concluídas", entra na função
+btnRemoverConcluidas.onclick = () => {
+    const seletor = ".app__section-task-list-item-complete"; // seletor CSS de tarefas concluídas
+    // remove cada elemento por completo da NodeList de tarefas concluídas
+    document.querySelectorAll(seletor).forEach(elemento => {
+        elemento.remove();
+    });
+    tarefas = tarefas.filter(tarefa => !tarefa.completa); // joga para dentro da variável "tarefas" apenas as tarefas que ainda não foram concluídas
+    atualizarTarefas(); 
+}
